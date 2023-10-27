@@ -1,62 +1,88 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-
-const Header = (props) => {
-  return (
-    <div> 
-     <h1>{props.course} </h1>
-     </div>
-)}
-
-const Part = (props) => {
-  return (
-    <div> 
-     <h1>{props.parte} {props.ejercicios} </h1>
-     </div>
-)}
+import React, {useState} from 'react';
+//import ReactDOM from 'react-dom'; //
+import { createRoot } from 'react-dom/client';
 
 
-const Content = (props) => {
-  return (
-    <div> 
-     <Part parte={props.parte1} ejercicios={props.ejercicio1} /> 
-     <Part parte={props.parte2} ejercicios={props.ejercicio2} /> 
-     <Part parte={props.parte3} ejercicios={props.ejercicio3} /> 
-     </div>
-)
-}
+// Ejercicios  1.12, 1.13 y 1.14 ANECDOTAS DE SW 
+// manejo de matiz en estado de componente  para almacenar Votos por Anecdota   
 
-
-const Total = (props) => {
-
-  return (
-    <div> 
-       <p> Number of exercises {props.exercises1+props.exercises2+props.exercises3}</p> 
-
-     </div>
-)
-}
-
-
-const App = () => {
-
-  const course= 'Half Stack application Development';
-  const part1= 'Fundamentals of React';
-  const exercises1=10;
-  const part2 = 'Using props to pass data';
-  const exercises2=7;
-  const part3='State of a component';
-  const exercises3=14;
-
-return (
-<div> 
- <Header course={course} />
- <Content parte1={part1} parte2={part2} parte3={part3} ejercicio1={exercises1} ejercicio2={exercises2} ejercicio3={exercises3} /> 
- <Total exercises1={exercises1}  exercises2={exercises2} exercises3={exercises3} /> 
-
+const MasVotada =(props) => {
  
+  const maximo=Math.max(...props.todosV);
+  const indiceM=props.todosV.indexOf(maximo)
+
+  return (
+    <div>
+      <p>
+      Anecdota mas Votada  
+      </p>
+      <p>
+        {anecdotes[indiceM]}  
+      </p>
+     </div>
+  )
+  }
+
+
+
+const Botones = ({manejaClick, textoBoton}) => (
+     
+  <button onClick={manejaClick} > {textoBoton} </button>
+)  
+
+
+
+const App = (props) => {
+  
+  let votosP =[0,0,0,0,0,0];
+
+  const [selected, setSelected] = useState(0);
+  const [votosT, setVotosT] = useState(votosP);
+
+  const proximaSelected = () => setSelected(Math.trunc(Math.random()*5+1));
+  
+  const nuevoVotos = () => {
+    const sumaVotos = votosT.map( (v, i) => {
+      if (i=== selected){
+       return v+1;
+      } else{
+       return v;
+      }
+    });
+ setVotosT(sumaVotos);
+ }
+
+
+   
+  return (
+    <div>
+      {props.anecdotes[selected]}
+      <p> Tiene  
+      {votosT[selected]}
+       Votos
+      </p>
+      <p>
+       <Botones manejaClick={proximaSelected} textoBoton= "Proxima Anecdota" /> 
+       <Botones manejaClick={nuevoVotos} textoBoton= "Votar Anecdota" /> 
+      </p>
+      
+       <MasVotada todosV={votosT}   />
+
 </div>
 )
+    
 }
 
- ReactDOM.render(<App />, document.getElementById('root'));
+const anecdotes = [
+  'If it hurts, do it more often',
+  'Adding manpower to a late software project makes it later!',
+  'The first 90 percent of the code accounts for the first 90 percent of the development time...The remaining 10 percent of the code accounts for the other 90 percent of the development time.',
+  'Any fool can write code that a computer can understand. Good programmers write code that humans can understand.',
+  'Premature optimization is the root of all evil.',
+  'Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.'
+]
+
+
+const container = document.getElementById('root');
+const root = createRoot(container); // createRoot(container!) para TypeScript
+root.render(<App anecdotes={anecdotes} />);
